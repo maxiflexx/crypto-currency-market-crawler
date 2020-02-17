@@ -1,17 +1,20 @@
 const constants = require('@constants');
+const Job = require('./job');
 const config = require('@config');
 
 class Crawler {
     constructor() {
         this.scheduler = require('node-schedule');
-        this.schedule = config.schedule;
-        this.job = require('./job');
+        this.jobList = []
         this.active = false;
+        config.jobList.forEach(jobInfo => {
+            this.jobList.push(new Job({ schedule: jobInfo.schedule, url: jobInfo.url, jobType: jobInfo.jobType }));
+        });
     }
 
     start() {
-        if (!this.job) {
-            throw new Error('Null Error: job is null or undefined.');
+        if (!this.jobList || this.jobList.length == 0) {
+            throw new Error('Null Error: job list is null or undefined.');
         }
 
         if (!this.scheduler) {
@@ -21,15 +24,23 @@ class Crawler {
         if (this.active) {
             return {
                 status: constants.STATUS_CODE.ALREADY_RUNNING,
-                message: 'Scheduler is already running.'
+                message: 'scheduler is already running.'
             }
         }
+        
+        try {
+            this.jobList.forEach(job => {
+                this.scheduler.scheduleJob(job.schedule, job);
+            });    
+        } catch(error) {
+            this.scheduler.cancelJob();
+            console.log(error);
+        }
 
-        this.scheduler.scheduleJob(this.schedule, this.job);
         this.active = true;
         return {
             status: constants.STATUS_CODE.SUCCESS,
-            message: 'Scheduler is running successfully.'
+            message: 'scheduler is running successfully.'
         }
     }
 
@@ -39,16 +50,19 @@ class Crawler {
         
         return {
             status: constants.STATUS_CODE.SUCCESS,
-            message: 'Scheduler is running successfully.'
+            message: 'scheduler is stopped successfully.'
         }
     }
 
     stat() {
-        return {
-            schedule: this.schedule,
-            active: this.isActive,
-            jobInfo: this.job.stat()
-        }
+        return this.jobList.map(job => {
+            return {
+                jobType: job.jobType,
+                schedule: job.schedule,
+                active: this.active,
+                jobInfo: job.stat()
+            }
+        });
     }
 }
 

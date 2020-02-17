@@ -2,19 +2,22 @@ const config = require('@config');
 const axios = require('axios');
 
 class CrawlingJob extends require('node-schedule').Job {
-    constructor() {
+    constructor({ schedule, url, jobType }) {
         super();
         this.count = 0;
         this.lastInvoked = null;
+        this.schedule = schedule;
         this.currencyList = config.currencyList;
-        this.upbitUrl = config.upbitUrl;
+        this.url = url;
+        this.jobType = jobType;
+        this.jobName = `Crawling Job (type: ${jobType})`;
     }
 
     async execute() {
         for(let i = 0; i < this.currencyList.length; i++) {
             let currency = this.currencyList[i];
-            let result = await axios.get(this.getURL(this.upbitUrl, currency));
-            console.log(this.getURL(this.upbitUrl, currency));
+            let result = await axios.get(this.getURL(currency));
+            console.log(this.getURL(currency));
             console.log(result.data);
         }
         this.count += 1;
@@ -23,15 +26,16 @@ class CrawlingJob extends require('node-schedule').Job {
 
     stat() {
         return {
-            name: 'Crawling Job',
+            name: `Crawling Job (type: ${this.jobType})`,
+            schedule: this.schedule,
             count: this.count,
             lastInvoked: this.lastInvoked
         }
     }
 
-    getURL(url, currency) {
-        return url.replace('{period}', config.period).replace('{currency}', currency).replace('{count}', config.count);
+    getURL(currency) {
+        return this.url.replace('{currency}', currency);
     }
 }
 
-module.exports = new CrawlingJob();
+module.exports = CrawlingJob;

@@ -1,24 +1,11 @@
 require('module-alias/register');
 
-const crawler = require('@crawler');
 const config = require('@config');
+const router = require('@routes');
 const Express = require('express');
 const server = new Express();
 
-server.post('/crawler/start', (req, res) => {
-    let result = crawler.start();
-    res.status(200).json(result);
-});
-
-server.post('/crawler/stop', (req, res) => {
-    let result = crawler.stop();
-    res.status(200).json(result);
-});
-
-server.get('/crawler/stat',  (req, res) => {
-    let result = crawler.stat();
-    res.status(200).json(result);
-});
+server.use('/crawler', router);
 
 process.on('uncaughtException', err => {
     console.log(err);
