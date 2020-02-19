@@ -34,7 +34,7 @@ class Crawler {
             });    
         } catch(error) {
             this.scheduler.cancelJob();
-            console.log(error);
+            this.active = false;
         }
 
         this.active = true;
