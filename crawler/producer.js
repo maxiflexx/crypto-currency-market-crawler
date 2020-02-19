@@ -26,4 +26,6 @@ function sendMessage(payloads, callback) {
 //     count += 1;
 // });
 
-module.exports = sendMessage;
+module.exports = {
+    sendMessage
+};

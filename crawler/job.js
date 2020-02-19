@@ -17,8 +17,8 @@ class CrawlingJob extends require('node-schedule').Job {
     async execute() {
         for(let i = 0; i < this.currencyList.length; i++) {
             let currency = this.currencyList[i];
-            let result = await axios.get(this.getURL(currency));
-            kafkaProducer.sendMessage({ topic: this.jobType, message: result }, function (error, data) {
+            // let result = await axios.get(this.getURL(currency));
+            kafkaProducer.sendMessage([{ topic: 'test', message: 'test message', partition: 0 }], function (error, data) {
                 if (error) {
                     console.log(error);
                 } else {

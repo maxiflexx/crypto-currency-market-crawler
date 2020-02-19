@@ -25,5 +25,5 @@ module.exports = {
         }
     ],
     currencyList: ['BTC', 'ETH', 'XRP', 'EOS'],
-    kafkaHost: "server.1=0.0.0.0:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181"
+    kafkaHost: "kafka1:9092"   // For test
 }
