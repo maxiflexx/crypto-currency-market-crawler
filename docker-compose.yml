@@ -8,9 +8,7 @@ services:
     hostname: crawler
     ports:
       - 3000:3000
-    networks:
-      kafka_net:
-        ipv4_address: 192.168.0.10
+
 
   zoo1:
     image: zookeeper
@@ -21,9 +19,7 @@ services:
     environment:
       ZOO_MY_ID: 1
       ZOO_SERVERS: server.1=0.0.0.0:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
-    networks:
-      kafka_net:
-        ipv4_address: 192.168.0.2
+
 
   zoo2:
     image: zookeeper
@@ -34,9 +30,7 @@ services:
     environment:
       ZOO_MY_ID: 2
       ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=0.0.0.0:2888:3888;2181 server.3=zoo3:2888:3888;2181
-    networks:
-      kafka_net:
-        ipv4_address: 192.168.0.3
+
 
   zoo3:
     image: zookeeper
@@ -47,9 +41,7 @@ services:
     environment:
       ZOO_MY_ID: 3
       ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=0.0.0.0:2888:3888;2181
-    networks:
-      kafka_net:
-        ipv4_address: 192.168.0.4
+
 
   kafka1:
     image: wurstmeister/kafka
@@ -61,9 +53,7 @@ services:
       KAFKA_ADVERTISED_HOST_NAME: 192.168.0.5
       KAFKA_ZOOKEEPER_CONNECT: zoo1:2181,zoo2:2181,zoo3:2181
       KAFKA_BROKER_ID: 1
-    networks:
-      kafka_net:
-        ipv4_address: 192.168.0.5
+
 
   kafka2:
     image: wurstmeister/kafka
@@ -75,9 +65,7 @@ services:
       KAFKA_ADVERTISED_HOST_NAME: 192.168.0.6
       KAFKA_ZOOKEEPER_CONNECT: zoo1:2181,zoo2:2181,zoo3:2181
       KAFKA_BROKER_ID: 2
-    networks:
-      kafka_net:
-        ipv4_address: 192.168.0.6
+
 
   kafka3:
     image: wurstmeister/kafka
@@ -89,14 +77,3 @@ services:
       KAFKA_ADVERTISED_HOST_NAME: 192.168.0.7
       KAFKA_ZOOKEEPER_CONNECT: zoo1:2181,zoo2:2181,zoo3:2181
       KAFKA_BROKER_ID: 3
-    networks:
-      kafka_net:
-        ipv4_address: 192.168.0.7
-
-networks:
-  kafka_net:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-      - subnet:  192.168.0.0/16
