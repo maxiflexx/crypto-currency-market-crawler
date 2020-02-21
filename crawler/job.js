@@ -1,5 +1,5 @@
 const config = require('@config');
-const kafkaProducer = require('./producer');
+const Producer = require('./producer');
 const axios = require('axios');
 
 class CrawlingJob extends require('node-schedule').Job {
@@ -12,13 +12,22 @@ class CrawlingJob extends require('node-schedule').Job {
         this.url = url;
         this.jobType = jobType;
         this.jobName = `Crawling Job (type: ${jobType})`;
+        this.kafkaProducer = new Producer();
+        this.init();
+    }
+
+    async init() {
+        for(let i = 0; i < this.currencyList.length; i++) {
+            await this.kafkaProducer.createTopic(corrency);
+        }
     }
 
     async execute() {
         for(let i = 0; i < this.currencyList.length; i++) {
             let currency = this.currencyList[i];
-            // let result = await axios.get(this.getURL(currency));
-            kafkaProducer.sendMessage([{ topic: 'test', message: 'test message', partition: 0 }], function (error, data) {
+            let result = await axios.get(this.getURL(currency));
+            console.log(result.data);
+            this.kafkaProducer.sendMessage([{ topic: currency, messages: [result.data], partition: 0 }], function (error, data) {
                 if (error) {
                     console.log(error);
                 } else {
