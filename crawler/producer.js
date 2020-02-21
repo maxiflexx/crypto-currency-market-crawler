@@ -8,7 +8,7 @@ const config = require('@config');
 class KafkaProducer {
     constructor() {
         this.client = new kafka.KafkaClient({ kafkaHost: config.kafkaHost });
-        this.producer = new kafka.Producer(client);
+        this.producer = new kafka.Producer(this.client);
     }
 
     init() {
@@ -23,7 +23,7 @@ class KafkaProducer {
 
     // topic 존재 여부 체크 필요함
     sendMessage(payloads, callback) {
-        producer.send(payloads, callback);
+        this.producer.send(payloads, callback);
     }
 
     async createTopic(topic) {
@@ -31,7 +31,7 @@ class KafkaProducer {
             throw new Error('invalid parameter.')
         }
         return new Promise((resolve, reject) => {
-            producer.createTopics([topic], (err, data) => {
+            this.producer.createTopics([topic], (err, data) => {
                 if (err) {
                     reject(err);
                 } else {

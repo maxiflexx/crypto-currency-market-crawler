@@ -18,7 +18,7 @@ class CrawlingJob extends require('node-schedule').Job {
 
     async init() {
         for(let i = 0; i < this.currencyList.length; i++) {
-            await this.kafkaProducer.createTopic(corrency);
+            await this.kafkaProducer.createTopic(this.currencyList[i]);
         }
     }
 
